@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>로그인</title>
+</head>
+
+<body>
+    <h2>로그인</h2>
+    <form method="POST">
+        아이디: <input type="text" name="username" required><br>
+        비밀번호: <input type="password" name="password" required><br>
+        <input type="submit" value="로그인">
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+
+</html>
