@@ -1,5 +1,9 @@
 {
   "users": [
-    {}
+    {
+      "username": "081212dmlwo",
+      "password_hash": "pbkdf2:sha256:1000000$OAH7nD43dkjV4684$ab0994ca475805cb94ab3ea8aa9f934b25706bd20194ada05b1751f855b27409",
+      "created_at": "2025-05-28T17:38:57.064901"
+    }
   ]
 }
