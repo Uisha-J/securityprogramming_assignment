@@ -6,6 +6,7 @@ import math
 from ctypes import memset
 from datetime import datetime
 import sys
+import string
 
 # 메모리 제로화 함수
 def secure_erase(buffer):
@@ -20,6 +21,18 @@ def calculate_entropy(password):
     if any(c.isdigit() for c in password): charset += 10
     if any(c in '!@#$%^&*()' for c in password): charset += 14
     return len(password) * math.log2(charset) if charset else 0
+
+# 패스워드 요구사항 검증 함수
+def is_valid_password(password):
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters."
+    if not any(c.islower() for c in password):
+        return False, "Password must include a lowercase letter."
+    if not any(c.isupper() for c in password):
+        return False, "Password must include an uppercase letter."
+    if not any(c in string.punctuation for c in password):
+        return False, "Password must include a special character."
+    return True, ""
 
 # JSON 데이터베이스 클래스
 class JSONDatabase:
@@ -49,7 +62,7 @@ class JSONDatabase:
 class LoginSystem(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Secure Login v3.1")
+        self.title("Secure Login")
         self.geometry("350x200")
         self.resizable(False, False)
         self.db = JSONDatabase()
@@ -145,9 +158,15 @@ class LoginSystem(tk.Tk):
                 error_label.config(text="Username and password required!")
                 return
 
+            # 패스워드 요구사항 검증
+            valid, msg = is_valid_password(password)
+            if not valid:
+                error_label.config(text=msg)
+                return
+
             entropy = calculate_entropy(password)
             if entropy < 50:
-                error_label.config(text="Password too weak!")
+                error_label.config(text="Password entropy too low!")
                 entropy_label.config(text=f"Entropy: {entropy:.1f} (Weak ❌)", fg="red")
                 return
 
