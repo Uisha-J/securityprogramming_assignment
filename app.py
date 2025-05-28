@@ -46,11 +46,10 @@ class JSONDatabase:
             json.dump(data, f, indent=2)
         return True
 
-# GUI 애플리케이션 클래스
 class LoginSystem(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Secure Login v3.0")
+        self.title("Secure Login v3.1")
         self.geometry("350x200")
         self.resizable(False, False)
         self.db = JSONDatabase()
@@ -66,18 +65,19 @@ class LoginSystem(tk.Tk):
         self.current_frame = tk.Frame(self)
         self.current_frame.pack(expand=True)
 
-        self.username = tk.StringVar()
-        self.password = tk.StringVar()
+        username_var = tk.StringVar()
+        password_var = tk.StringVar()
 
-        # UI 컴포넌트
         tk.Label(self.current_frame, text="Username:").grid(row=0, column=0, pady=5, sticky="e")
-        tk.Entry(self.current_frame, textvariable=self.username).grid(row=0, column=1, pady=5)
+        tk.Entry(self.current_frame, textvariable=username_var).grid(row=0, column=1, pady=5)
 
         tk.Label(self.current_frame, text="Password:").grid(row=1, column=0, pady=5, sticky="e")
-        tk.Entry(self.current_frame, textvariable=self.password, show="*").grid(row=1, column=1, pady=5)
+        tk.Entry(self.current_frame, textvariable=password_var, show="*").grid(row=1, column=1, pady=5)
 
-        tk.Button(self.current_frame, text="Register", width=10, command=self.register).grid(row=2, column=0, pady=10)
-        tk.Button(self.current_frame, text="Login", width=10, command=self.login).grid(row=2, column=1, pady=10)
+        tk.Button(self.current_frame, text="Register", width=10,
+                  command=self.register).grid(row=2, column=0, pady=10)
+        tk.Button(self.current_frame, text="Login", width=10,
+                  command=lambda: self.login(username_var.get(), password_var.get())).grid(row=2, column=1, pady=10)
 
         self.feedback = tk.Label(self.current_frame, text="", fg="red")
         self.feedback.grid(row=3, columnspan=2)
@@ -87,7 +87,6 @@ class LoginSystem(tk.Tk):
         self.current_frame = tk.Frame(self)
         self.current_frame.pack(expand=True)
 
-        # 성공 메시지
         tk.Label(
             self.current_frame, 
             text="Login Successful!", 
@@ -95,7 +94,6 @@ class LoginSystem(tk.Tk):
             font=("Arial", 14)
         ).pack(pady=30)
         
-        # 로그아웃 버튼
         tk.Button(
             self.current_frame,
             text="Logout",
@@ -106,12 +104,10 @@ class LoginSystem(tk.Tk):
         ).pack()
 
     def register(self):
-        # 새 창 생성
         reg_window = tk.Toplevel(self)
         reg_window.title("Password Strength Check")
         reg_window.geometry("300x220")
 
-        # 새로운 입력 필드
         tk.Label(reg_window, text="Username:").pack(pady=5)
         new_username = tk.StringVar()
         tk.Entry(reg_window, textvariable=new_username).pack(pady=5)
@@ -120,23 +116,18 @@ class LoginSystem(tk.Tk):
         new_password = tk.StringVar()
         tk.Entry(reg_window, textvariable=new_password, show="*").pack(pady=5)
 
-        # 엔트로피 표시 레이블
         entropy_label = tk.Label(reg_window, text="", fg="blue")
         entropy_label.pack(pady=5)
 
-        # 에러 메시지 레이블
         error_label = tk.Label(reg_window, text="", fg="red")
         error_label.pack(pady=2)
 
-        # 기능 버튼 프레임
         btn_frame = tk.Frame(reg_window)
         btn_frame.pack(pady=10)
 
-        # 강도 확인 버튼
         tk.Button(btn_frame, text="Check Strength", 
                 command=lambda: self.show_entropy(new_password.get(), entropy_label)).grid(row=0, column=0, padx=5)
 
-        # 최종 등록 버튼
         tk.Button(btn_frame, text="Confirm Register", 
                 command=lambda: self.finalize_registration(
                     new_username.get(), new_password.get(), reg_window, error_label, entropy_label)
@@ -173,11 +164,8 @@ class LoginSystem(tk.Tk):
                 error_label.config(text="Username already exists!")
         finally:
             secure_erase(password_buf)
-            self.password.set("")
 
-    def login(self):
-        username = self.username.get()
-        password = self.password.get()
+    def login(self, username, password):
         password_buf = bytearray(password.encode('utf-8'))
         try:
             with open(self.db.filename) as f:
@@ -189,7 +177,6 @@ class LoginSystem(tk.Tk):
                 self.feedback.config(text="Invalid credentials!")
         finally:
             secure_erase(password_buf)
-            self.password.set("")
 
     def logout(self):
         self.show_login_ui()
